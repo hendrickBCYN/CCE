@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a427a8f0c70132e40b5bf98d359d13ce, type: 3}
+  m_Name: RailLeveMalade_I
+  m_EditorClassIdentifier: 
+  _optionName: "Rail l\xE8ve-malade en I"
+  _optionType: 1
+  _optionReference: "Rail l\xE8ve-malade en I"
+  _hasDimensions: 0
+  _optionDimensions: Dimensions de mon option
+  _hasCost: 0
+  _optionCostType: 0
+  _optionCost: 0
+  _optionCostTotal: 0
+  _optionImage: {fileID: 0}
+  _configurationEvent: {fileID: 0}
+  _object: {fileID: 6923071388145339826, guid: 4c395c6d6a34853469a8a7c1e016eaf4, type: 3}
+  _position: {x: 0, y: 0, z: 0}
+  _orientation: {x: 0, y: 0, z: 0}
+  _scale: {x: 1, y: 1, z: 1}

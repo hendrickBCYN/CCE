@@ -1,0 +1,21 @@
+{
+    "name": "bycn.configurator.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6546d7765b4165b40850b3667f981c26",
+        "GUID:478a2357cc57436488a56e564b08d223",
+        "GUID:e1e091ae4a830374eb2fc82b5612d27e",
+        "GUID:3f50703254c3376499d67edf18cc744a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

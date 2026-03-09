@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/InputManager.cs.meta
+guid: 6c6d97c15029fde4bbd56519011a3362
+========
+guid: 13458515f4de375438c58a4b86f03dfe
+>>>>>>>> Structure:Assets/Scripts/UIManager.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/PlayerControls.cs.meta
+guid: 02c41675ab10b2d4cbe1c7e46a1d2297
+========
+guid: 9000906c7fbb9274ba70cac4f2baf604
+>>>>>>>> Structure:Assets/Scripts/BathRoom.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

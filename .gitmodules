@@ -1,0 +1,6 @@
+[submodule "Packages/com.bycn.configurator"]
+	path = Packages/com.bycn.configurator
+	url = https://gitlab.com/pi.martin/bycn-configurator.git
+[submodule "Packages/com.bycn.ui"]
+	path = Packages/com.bycn.ui
+	url = https://gitlab.com/pi.martin/bycn-ui.git

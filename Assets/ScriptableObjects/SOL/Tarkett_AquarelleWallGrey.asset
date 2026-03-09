@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23d616165b6e2064fa6c7cd3d2cabc20, type: 3}
+  m_Name: Tarkett_AquarelleWallGrey
+  m_EditorClassIdentifier: 
+  _optionName: Aquarelle Wall Grey
+  _optionType: 0
+  _optionReference: Tarkett - Aquarelle Wall Grey
+  _hasDimensions: 0
+  _optionDimensions: Dimensions de mon option
+  _hasCost: 0
+  _optionCostType: 0
+  _optionCost: 0
+  _optionCostTotal: 0
+  _optionImage: {fileID: 0}
+  _configurationEvent: {fileID: 0}
+  _material: {fileID: 2100000, guid: 1af62fb5c3c71c548afbd97188fb7ffe, type: 2}

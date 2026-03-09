@@ -1,0 +1,21 @@
+{
+  "name": "com.bycn.ui",
+  "version": "1.0.0",
+  "displayName": "BYCN UI",
+  "description": "Package d'interface utilisateur",
+  "unity": "2022.3",
+  "unityRelease": "1f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "dependencies": {
+	  "com.unity.textmeshpro": "3.0.6"
+	},
+ "keywords": [
+  ],
+  "author": {
+    "name": "Pierre Martin",
+    "email": "pi.martin@bouygues-construction.com",
+    "url": ""
+  }
+}

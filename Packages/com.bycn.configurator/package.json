@@ -1,0 +1,23 @@
+{
+  "name": "com.bycn.configurator",
+  "version": "1.0.0",
+  "displayName": "BYCN Configurator",
+  "description": "Package permettant la création de configurateurs",
+  "unity": "2022.3",
+  "unityRelease": "1f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "dependencies": {
+	  "com.unity.textmeshpro": "3.0.6",
+	  "com.unity.editorcoroutines": "1.0.0",
+	  "com.bycn.ui": "1.0.0"
+	},
+ "keywords": [
+  ],
+  "author": {
+    "name": "Pierre Martin",
+    "email": "pi.martin@bouygues-construction.com",
+    "url": ""
+  }
+}
