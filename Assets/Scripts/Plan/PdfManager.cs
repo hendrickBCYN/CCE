@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Globalization;
 using iText.IO.Image;
 using iText.Kernel.Geom;
@@ -28,9 +29,13 @@ public class PdfManager : MonoBehaviour
     private PdfDocument _pdf;
     private Document _document;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private MemoryStream _memoryStream;
+#endif
+
     // Dynamics cartridge data
     private string _dateText = string.Empty;
-    private string  _sideText = string.Empty;
+    private string _sideText = string.Empty;
     private string _scaleText = string.Empty;
     private CameraManager.Side[] _sides;
 
@@ -38,14 +43,18 @@ public class PdfManager : MonoBehaviour
     [SerializeField] private float _imageSizeInCm = 19f;
     [SerializeField] private PdfUtility.ScaleInCm _scaleInCm = PdfUtility.ScaleInCm._1_50;
 
-    private void Start() 
+    private void Start()
     {
         InitializeData();
     }
 
     private void InitializeData()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        _path = ""; // Pas de chemin fichier en WebGL
+#else
         _path = Application.streamingAssetsPath + "/PlanPDF";
+#endif
         _sides = (CameraManager.Side[])Enum.GetValues(typeof(CameraManager.Side));
         _scaleText += PdfUtility.ScaleInCmToText(_scaleInCm);
         GenerateDate();
@@ -55,15 +64,24 @@ public class PdfManager : MonoBehaviour
     public void InitializePdfDocument()
     {
         _pageSize = PageSize.A4;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // En WebGL : écriture en mémoire
+        _memoryStream = new MemoryStream();
+        _writer = new PdfWriter(_memoryStream);
+#else
+        // En Standalone : écriture fichier
         _writer = new PdfWriter(_fileName);
-        _pdf = new PdfDocument(_writer);  
-        _document = new Document(_pdf, _pageSize);  
+#endif
+
+        _pdf = new PdfDocument(_writer);
+        _document = new Document(_pdf, _pageSize);
     }
 
     public void CreatePdfFromAllSides(Texture2D[] p_capturedTextures)
     {
         bool l_result = false;
-  
+
         try
         {
             InitializePdfDocument();
@@ -73,6 +91,15 @@ public class PdfManager : MonoBehaviour
             CreateFinalPage();
 
             _document.Close();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // Envoyer le PDF à React pour téléchargement
+            byte[] pdfBytes = _memoryStream.ToArray();
+            string base64 = Convert.ToBase64String(pdfBytes);
+            NetworkManager.Instance.RequestPdfDownload(base64);
+            _memoryStream.Dispose();
+#endif
+
             Debug.Log($"PDF created at : {_fileName}");
             l_result = true;
         }
@@ -81,7 +108,7 @@ public class PdfManager : MonoBehaviour
             Debug.Log($"PDF creation failed : {e.Message}");
         }
 
-        if(_openPDFButton != null)
+        if (_openPDFButton != null)
         {
             _openPDFButton.interactable = l_result;
         }
@@ -89,23 +116,22 @@ public class PdfManager : MonoBehaviour
 
     public void CreatePdfFromSelectedSide(Texture2D p_capturedTexture)
     {
-         try
+        try
         {
-            InitializePdfDocument();    
+            InitializePdfDocument();
             AddImageCapturedToPdf(p_capturedTexture.EncodeToPNG(), _imageSizeInCm);
 
             _document.Close();
-        
+
             Debug.Log($"CaptureCameraViews - PDF created at : {_fileName}");
         }
         catch (Exception e)
         {
             Debug.Log($"CaptureCameraViews - PDF creation failed : {e.Message}");
-        }    
+        }
     }
 
-
-    private void CreateCoverPage() 
+    private void CreateCoverPage()
     {
         _coverImage = _imageCaptureService.CaptureCoverImage();
         AddImageCapturedToPdf(_coverImage.EncodeToPNG(), _imageSizeInCm);
@@ -140,12 +166,26 @@ public class PdfManager : MonoBehaviour
         for (int i = 0; i < p_capturedTextures.Length; i++)
         {
             AddNewPage();
-            
+
             _sideText = CameraManager.SideToText(_sides[i]);
             AddImageCapturedToPdf(p_capturedTextures[i].EncodeToPNG(), _imageSizeInCm);
 
             _cartridgeGenerator.CreatePlanCartridgeTemplate();
         }
+    }
+
+    public void ExportPdfToReact()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    // Générer le PDF en mémoire (MemoryStream au lieu de FileStream)
+    // Convertir en base64
+    // Envoyer via NetworkManager
+    // byte[] pdfBytes = GeneratePdfInMemory();
+    byte[] pdfBytes =  _memoryStream.ToArray();
+    string base64 = Convert.ToBase64String(pdfBytes);
+    NetworkManager.Instance.RequestPdfDownload(base64);
+    _memoryStream.Dispose();
+#endif
     }
 
     // Getters

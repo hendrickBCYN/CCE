@@ -1,8 +1,6 @@
-using AnotherFileBrowser.Windows;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml.Serialization;
+// using System.IO;
 using UnityEngine;
 
 public class SaveConfig : MonoBehaviour
@@ -19,32 +17,94 @@ public class SaveConfig : MonoBehaviour
     /// </summary>
     public void SaveToJson()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // En WebGL: on délègue la sauvegarde à React via le NetworkManager
+        string configData = BuildConfigJson();
+        NetworkManager.Instance.RequestSave(configData);
+#else
+        // En éditeur: on garde le comportement fichier local
         string l_folderPath = FileDialogManager.OpenFolder();
         if (l_folderPath != null)
-            Debug.Log("Folder: " + l_folderPath);
-        //Debug.Log("Check StreamingAssets path : " + Application.streamingAssetsPath);
-        //
-        //else Debug.Log("Folder StreamingAssets already exists");
-        string fileName = "ehpad_config.json";
-        try
         {
-            WriteData(l_folderPath + "/" + fileName);
+            try
+            {
+                WriteData(l_folderPath + "/" + "ehpad_config.json");
+                Debug.Log($"SaveConfig - SaveToJson() - folderPath : {l_folderPath}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e.ToString());
+            }
         }
-        catch (Exception e)
-        {
-            Debug.LogWarning(e.ToString());
-            fileName = "";
-        }
+#endif
+    }
+
+    // Construit le JSON de configuration sans écrire de fichier.
+    // Utilisé par le mode WebGL pour envoyer les données à React.
+    private string BuildConfigJson()
+    {
+        RoomSave l_room = new(
+            _roomManager.GetWidth(),
+            _roomManager.GetArea(),
+            _roomManager.GetWallHeight(),
+            _roomManager.GetWallThickness(),
+            _roomManager.GetWallHeightProtection(),
+            _roomManager.GetWallThicknessProtection()
+        );
+        FurnitureSave furniture = new(_roomManager.GetFurnituresRefs());
+        CamSave cam = new(
+            _cameraManager.GetCurrentCameraType(),
+            _cameraManager.GetCamerasType(),
+            _cameraManager.GetCamerasTransformVector3(),
+            _cameraManager.GetFieldOfView(),
+            _cameraManager.GetDistToTarget()
+        );
+        FinishSave finish = new(
+            _roomManager.GetWallMaterialsString(),
+            _roomManager.GetFloorMaterialString(),
+            _roomManager.GetWallProtectionMaterialsString(),
+            _roomManager.IsWallProtectionFloorExtension
+        );
+        PMRSave pmr = new(
+            _pmrManager.GetAllObjectsNames(),
+            _pmrManager.GetAllObjectsPos(),
+            _pmrManager.GetAllObjectsRot()
+        );
+
+        string userName = "WebGL_User";
+        Config configObj = new Config(l_room, cam, finish, furniture, pmr, userName);
+        return JsonUtility.ToJson(configObj);
     }
 
     void WriteData(string path)
     {
-        RoomSave l_room = new(_roomManager.GetWidth(), _roomManager.GetArea(), _roomManager.GetWallHeight(), _roomManager.GetWallThickness(), _roomManager.GetWallHeightProtection(), _roomManager.GetWallThicknessProtection());
+        RoomSave l_room = new(
+            _roomManager.GetWidth(),
+            _roomManager.GetArea(),
+            _roomManager.GetWallHeight(),
+            _roomManager.GetWallThickness(),
+            _roomManager.GetWallHeightProtection(),
+            _roomManager.GetWallThicknessProtection()
+        );
         FurnitureSave furniture = new(_roomManager.GetFurnituresRefs());
-        CamSave cam = new(_cameraManager.GetCurrentCameraType(), _cameraManager.GetCamerasType(), _cameraManager.GetCamerasTransformVector3(), _cameraManager.GetFieldOfView(), _cameraManager.GetDistToTarget());
-        FinishSave finish = new(_roomManager.GetWallMaterialsString(), _roomManager.GetFloorMaterialString(), _roomManager.GetWallProtectionMaterialsString(), _roomManager.IsWallProtectionFloorExtension);
-
-        PMRSave pmr = new(_pmrManager.GetAllObjectsNames(), _pmrManager.GetAllObjectsPos(), _pmrManager.GetAllObjectsRot());
+        CamSave cam = new(
+            _cameraManager.GetCurrentCameraType(),
+            _cameraManager.GetCamerasType(),
+            _cameraManager.GetCamerasTransformVector3(),
+            _cameraManager.GetFieldOfView(),
+            _cameraManager.GetDistToTarget()
+        );
+        FinishSave finish = new(
+            _roomManager.GetWallMaterialsString(),
+            _roomManager.GetFloorMaterialString(),
+            _roomManager.GetWallProtectionMaterialsString(),
+            _roomManager.IsWallProtectionFloorExtension
+        );
+        PMRSave pmr = new(
+            _pmrManager.GetAllObjectsNames(),
+            _pmrManager.GetAllObjectsPos(),
+            _pmrManager.GetAllObjectsRot()
+        );
 
         string userName = Environment.UserName;
         config = new Config(l_room, cam, finish, furniture, pmr, userName);
@@ -55,39 +115,75 @@ public class SaveConfig : MonoBehaviour
 
     /// <summary>
     /// Load data from a Json file
+    /// Charge la configuration.
+    /// En WebGL → demande à React de charger depuis l'API.
+    /// En Standalone → lit un fichier local.
     /// </summary>
-    public void LoadToJson()
+    public void LoadFromJson()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    // En WebGL, on demande à React de charger depuis l'API
+    NetworkManager.Instance.RequestLoad("latest");
+#else
         string l_folderPath = FileDialogManager.OpenFolder();
         if (l_folderPath != null)
-            Debug.Log("Folder: " + l_folderPath);
-        //Debug.Log("Check StreamingAssets path : " + Application.streamingAssetsPath);
-        //
-        //else Debug.Log("Folder StreamingAssets already exists");
-        string fileName = "ehpad_config.json";
-        try
         {
-            LoadData(l_folderPath + "/" + fileName);
+            try
+            {
+                LoadData(l_folderPath + "/" + "ehpad_config.json");
+                Debug.Log($"SaveConfig - LoadFromJson() - folderPath : {l_folderPath}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e.ToString());
+            }
         }
-        catch (Exception e)
-        {
-            Debug.LogWarning(e.ToString());
-            fileName = "";
-        }
+#endif
+    }
+
+    // Appelé par le NetworkManager quand React envoie une configuration chargée.
+    public void LoadedFromJson(string configJson)
+    {
+        config = JsonUtility.FromJson<Config>(configJson);
+        ApplyConfig();
+        config = null;
     }
 
     void LoadData(string path)
     {
         string configData = System.IO.File.ReadAllText(path);
-
         config = JsonUtility.FromJson<Config>(configData);
-
-        _roomManager.LoadData(config.room.width, config.room.area, config.room.wallHeight, config.room.wallThickness, config.room.wallProtectionHeight, config.room.wallProtectionThickness);
-        _roomManager.LoadFurnituresData(config.furniture.refname, config.furniture.refposition, config.furniture.refrotation);
-        _cameraManager.LoadData(config.cam.currentTypes, config.cam.type, config.cam.transforms, config.cam.fovs, config.cam.dtts);
-
-        _pmrManager.LoadData(config.pmr.name, config.pmr.position, config.pmr.rotation);
+        ApplyConfig();
         config = null;
+    }
+
+    void ApplyConfig()
+    {
+        _roomManager.LoadData(
+            config.room.width,
+            config.room.area,
+            config.room.wallHeight,
+            config.room.wallThickness,
+            config.room.wallProtectionHeight,
+            config.room.wallProtectionThickness
+        );
+        _roomManager.LoadFurnituresData(
+            config.furniture.refname,
+            config.furniture.refposition,
+            config.furniture.refrotation
+        );
+        _cameraManager.LoadData(
+            config.cam.currentTypes,
+            config.cam.type,
+            config.cam.transforms,
+            config.cam.fovs,
+            config.cam.dtts
+        );
+        _pmrManager.LoadData(
+            config.pmr.name,
+            config.pmr.position,
+            config.pmr.rotation
+        );
     }
 }
 

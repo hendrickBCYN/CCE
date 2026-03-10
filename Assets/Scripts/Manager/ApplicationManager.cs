@@ -1,4 +1,4 @@
-using System.Windows.Forms;
+// using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -148,7 +148,7 @@ public class ApplicationManager : MonoBehaviour
     {
         bool l_load = false;
 
-        _config.LoadToJson();
+        _config.LoadFromJson();
         //_command.Reset();
         if (_configurationManager != null)
             l_load = _configurationManager.LoadConfiguration();

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 public class FurnitureCommand : ICommand
 {

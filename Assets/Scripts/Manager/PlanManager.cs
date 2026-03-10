@@ -18,9 +18,14 @@ public class PlanManager : MonoBehaviour
 
     public void OpenGeneratedPDF()
     {
-        if(System.IO.File.Exists(_pdfManager.GetFileName()))
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // En WebGL, le PDF est téléchargé via React (voir PdfManager)
+        Debug.Log("PlanManager En WebGL, le PDF est envoyé au navigateur via React.");
+#else
+        if (System.IO.File.Exists(_pdfManager.GetFileName()))
         {
             Application.OpenURL(_pdfManager.GetFileName());
         }
+#endif
     }
 }
